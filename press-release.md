@@ -1,0 +1,9 @@
+# Seeing Wildfires Coming: Using Data to Get Ahead of the Crisis
+
+## Hook
+Every year, wildfires tear through communities in the western United States, destroying homes, threatening lives, and stretching emergency response teams to their limits. The problem is not just that fires are happening. It is that they are getting bigger, moving faster, and arriving in places that were not prepared for them. Local governments and emergency responders are often left reacting to fires instead of getting ahead of them. Better prediction tools could change that.
+## Problem Statement
+Wildfire seasons in the western United States have grown longer and more destructive over the past two decades. In 2022 alone, just over 20,000 fires burned approximately 5.8 million acres across western states. The costs are enormous with direct damages, firefighting expenses, and economic disruption reaching hundreds of billions of dollars each year. Despite this, many local governments and emergency agencies still lack reliable tools to identify which areas are at the highest risk before a fire starts. Without that information, resource allocation decisions, evacuation planning, and preventive action are much harder to get right.
+## Solution Description
+This project builds a predictive model of wildfire risk for the western United States using historical fire records, weather data, and vegetation information. The model identifies the conditions most strongly associated with fire occurrence and uses them to estimate risk levels across different regions. The results are designed to be practical. Local governments can use them to prioritize which areas need the most attention during high-risk periods. Emergency responders can use them to plan resource placement before fire season peaks. The model does not predict the future with certainty, but it gives decision-makers a clearer picture of where to focus their efforts when conditions are dangerous.
+## Chart
