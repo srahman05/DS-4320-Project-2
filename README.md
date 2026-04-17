@@ -13,7 +13,7 @@ This README contains the materials for DS 4320 Project 2.
 | DOI | [Link](https://doi.org/10.5281/zenodo.19343154) |
 | Press Release | [Link to Press Release](https://github.com/srahman05/DS-4320-Project-1/blob/eb7e659be1f3539538d978a8510499ee40b31b37/press-release.md) |
 | Data | [Link to Data](https://myuva-my.sharepoint.com/:f:/g/personal/yeh5kr_virginia_edu/IgAh42Bkd-YKT4hns9ODTMxhAf_ZPHtqZCuu_OTt-OEreUI?e=OqHScd) |
-| Pipeline | [Link to Pipeline Analysis](https://github.com/srahman05/DS-4320-Project-1/tree/ac233e1fecce92b530c35703fe316742ae2f81c8/pipeline-analysis) |
+| Pipeline | [Link to Pipeline Analysis](https://github.com/srahman05/DS-4320-Project-2/blob/8d0d00990ebb0c7c0d0598cddbb7143fdb7a4db4/pipeline-analysis.ipynb) |
 | License | [MIT](https://github.com/srahman05/DS-4320-Project-2/blob/4cf91ab2d6f5c60a9b8e1af2d2ecc78df10ce65b/LICENSE) |
 
 
@@ -59,3 +59,101 @@ human activity that have all made fires more frequent and more destructive over 
 | Wildfire Risk Prediction: A Review | Reviews data sources, preprocessing methods, and models commonly used in wildfire prediction research, including statistical and deep learning approaches | [Link](https://myuva-my.sharepoint.com/:b:/g/personal/yeh5kr_virginia_edu/IQBep0Tl_x6RR7C0qaaNGkVZAckb1tXZaaIthJPdFG016hc?e=irltFd) |
 | Wildfires in the United States 101: Context and Consequences | An accessible overview of wildfire trends, causes, and their economic, environmental, and public health impacts, with a strong focus on the western United States | [Link](https://myuva-my.sharepoint.com/:b:/g/personal/yeh5kr_virginia_edu/IQBkPzKcL408T42M62XX-UuyAb4HEN6qPQR9uBanJGDZWfk?e=GstgQN) |
 
+## Data Creation
+### Data Acquisition Process
+The primary dataset is the USFS Fire Occurrence Database, downloaded from the Forest Service Research Data Archive. It contains 2.1 million wildfire records spanning 1992 to 2020, with each record including the fire location, size in acres, cause classification, discovery date, and containment date. This dataset is considered the authoritative federal record of wildfire occurrences in the United States and was downloaded as a SQLite file.
+
+The secondary dataset is daily weather observations from NOAA's Global Historical Climatology Network (GHCN), accessed through NOAA's Climate Data Online portal. I selected 34 stations located primarily in California and Nevada because these
+stations had the most complete records over the 1992 to 2020 time range. Each station provides daily readings for temperature, precipitation, snowfall, and wind speed. Both datasets are publicly available at no cost and require no special access permissions. After merging, the combined dataset is stored in a MongoDB Atlas cluster in a collection called `fires` inside the `wildfires` database.
+
+### Code Table
+| File | Description | Link |
+|------|-------|------|
+| data-creation.ipynb | Loads the USFS SQLite file, filters to CA and NV, reads and cleans the NOAA weather CSV, computes monthly weather averages by state, merges with fire records, builds nested documents, and inserts into MongoDB | [Link](https://github.com/srahman05/DS-4320-Project-2/blob/8d0d00990ebb0c7c0d0598cddbb7143fdb7a4db4/pipeline-analysis.ipynb) |
+
+### Rationale
+The most significant judgment call in this project was how to match fire records to weather data. Each fire has a latitude and longitude, but weather stations are sparse and unevenly distributed, so matching each fire to its nearest station on the exact date would produce many missing values and introduce noise from stations that are far away. I chose to average all station readings within a state by month instead, which trades geographic precision for completeness. This means all fires in California in June 2015, for example, receive the same weather values. This is a limitation for local analysis but is reasonable for statewide or yearly trend analysis.
+
+I also chose to filter the dataset to California and Nevada only. These two states have the most complete weather station coverage in the NOAA pull and account for a large share of western wildfires, making them a reasonable scope for this project. Expanding to other western states would require additional weather data to maintain the same match quality.
+
+### Bias Identification
+The NOAA weather stations are not evenly distributed across CA and NV. They are concentrated in certain regions, meaning the monthly averages may not accurately represent weather conditions at the actual fire location. The USFS fire database also mainly only has fires on federally managed land, so fires on private or state land may be underrepresented. Smaller fires (size class A, under 0.25 acres) are less consistently reported across agencies and years, meaning the dataset likely undercounts small fire occurrences in earlier years. Finally, cause classification depends on human judgment at the time of reporting and may be inconsistently applied. 
+
+### Bias Mitigation
+The geographic bias in weather station coverage can be partially accounted for by including the match method field in each document, which makes it clear that weather values are state-level monthly averages rather than local measurements. Analyses that require precise weather conditions should treat these values as approximate. The underrepresentation of small fires can be mitigated by filtering analyses to fires above a certain size threshold (for example, size class C and above) where reporting is more consistent. Cause classification uncertainty can be handled by grouping causes into broader categories. 
+
+## Metadata
+### Implicit Schema
+All documents in the fires collection should follow this structure. Fields marked required must be present in every document. Optional fields may be absent if the data is unavailable, but the field name and data type must remain consistent when they are included.
+
+**Top-level fields (all required)**
+- fire_id: integer, unique identifier from the USFS database
+- name: string, name of the fire (may be null if unnamed)
+- state: string, two-letter state code, always uppercase (e.g. "CA")
+- county: string, FIPS county code
+- year: integer, four-digit year of discovery
+- month: integer, month of discovery (1 to 12)
+- cause: string, general cause category from NWCG classification
+- size_acres: float, fire size in acres
+- size_class: string, single letter size classification (A through G)
+- location: nested object, always contains latitude and longitude as floats
+- weather: nested object, always contains all weather fields listed below
+
+**Nested location fields (required)**
+- latitude: float
+- longitude: float
+
+**Nested weather fields (required)**
+- avg_temp_f: float, monthly average temperature in Fahrenheit
+- avg_tmax_f: float, monthly average high temperature in Fahrenheit
+- avg_tmin_f: float, monthly average low temperature in Fahrenheit
+- avg_precip_in: float, monthly average daily precipitation in inches
+- avg_snow_in: float, monthly average daily snowfall in inches
+- avg_wind_mph: float, monthly average wind speed in mph
+- match_method: string, always "state_month_average"
+
+### Data Summary
+| Property | Value |
+|----------|-------|
+| Database | wildfires |
+| Collection | fires |
+| Total documents | 272,091 |
+| States covered | CA, NV |
+| Year range | 1992 to 2020 |
+| Weather stations used | 34 |
+| Documents with full weather data | 272,091 (100%) |
+| Top-level fields per document | 10 |
+| Nested sub-documents | 2 (location, weather) |
+
+### Data Dictionary
+| Field | Data Type | Description | Example |
+|-------|-----------|-------------|---------|
+| fire_id | integer | Unique fire ID from USFS database | 10423 |
+| name | string | Name assigned to the fire | "VALLEY" |
+| state | string | Two-letter state code | "CA" |
+| county | string | FIPS county code | "63" |
+| year | integer | Year the fire was discovered | 2015 |
+| month | integer | Month the fire was discovered | 6 |
+| cause | string | General cause from NWCG classification | "Natural" |
+| size_acres | float | Total area burned in acres | 76067.0 |
+| size_class | string | USFS size classification A through G | "G" |
+| location.latitude | float | Latitude of fire origin | 38.56 |
+| location.longitude | float | Longitude of fire origin | -119.91 |
+| weather.avg_temp_f | float | Mean daily temp for that state and month | 60.81 |
+| weather.avg_tmax_f | float | Mean daily high temp for that state and month | 74.75 |
+| weather.avg_tmin_f | float | Mean daily low temp for that state and month | 46.94 |
+| weather.avg_precip_in | float | Mean daily precipitation for that state and month | 0.003 |
+| weather.avg_snow_in | float | Mean daily snowfall for that state and month | 0.0 |
+| weather.avg_wind_mph | float | Mean daily wind speed for that state and month | 10.74 |
+| weather.match_method | string | Method used to join weather to fire record | "state_month_average" |
+
+### Uncertainty Table
+| Field | Mean | Std Dev | Min | Max | Notes |
+|-------|------|---------|-----|-----|-------|
+| size_acres | 120.42 | 3480.71 | 0.00 | 589,368 | Highly right-skewed; median is only 0.20 acres, meaning most fires are very small |
+| weather.avg_temp_f | 56.76 | 10.32 | 22.73 | 74.03 | State-level average introduces geographic uncertainty for fires far from stations |
+| weather.avg_tmax_f | 72.30 | 10.14 | 33.52 | 88.61 | Same geographic limitations as avg_temp_f |
+| weather.avg_tmin_f | 46.23 | 7.71 | 15.00 | 60.00 | Same geographic limitations as avg_temp_f |
+| weather.avg_precip_in | 0.03 | 0.04 | 0.00 | 0.41 | Very low values overall; CA and NV are arid states |
+| weather.avg_snow_in | 0.00 | 0.00 | 0.00 | 0.27 | Nearly zero across all records given the warm seasons when fires occur |
+| weather.avg_wind_mph | 8.27 | 1.54 | 3.43 | 12.45 | Low variance likely due to station averaging smoothing out extreme wind events |
