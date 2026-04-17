@@ -69,7 +69,7 @@ stations had the most complete records over the 1992 to 2020 time range. Each st
 ### Code Table
 | File | Description | Link |
 |------|-------|------|
-| data-creation.ipynb | Loads the USFS SQLite file, filters to CA and NV, reads and cleans the NOAA weather CSV, computes monthly weather averages by state, merges with fire records, builds nested documents, and inserts into MongoDB | [Link](https://github.com/srahman05/DS-4320-Project-2/blob/8d0d00990ebb0c7c0d0598cddbb7143fdb7a4db4/pipeline-analysis.ipynb) |
+| data-creation.ipynb | Loads the USFS SQLite file, filters to CA and NV, reads and cleans the NOAA weather CSV, computes monthly weather averages by state, merges with fire records, builds nested documents, and inserts into MongoDB | [Link](https://github.com/srahman05/DS-4320-Project-2/blob/a8bc1f89c091af3fcad723c02da517cbaf07b561/data-creation.ipynb) |
 
 ### Rationale
 The most significant judgment call in this project was how to match fire records to weather data. Each fire has a latitude and longitude, but weather stations are sparse and unevenly distributed, so matching each fire to its nearest station on the exact date would produce many missing values and introduce noise from stations that are far away. I chose to average all station readings within a state by month instead, which trades geographic precision for completeness. This means all fires in California in June 2015, for example, receive the same weather values. This is a limitation for local analysis but is reasonable for statewide or yearly trend analysis.
