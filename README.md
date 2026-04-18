@@ -24,11 +24,14 @@ This README contains the materials for DS 4320 Project 2.
 ## Problem Definition
 ### General and Specific Problem
 * **General Problem:** Wildfires in the western United States have become increasingly frequent and destructive, making it difficult for emergency managers to allocate resources effectively before fires occur.
-* **Specific Problem:** This project refines that general problem into a specific question: can we predict the likelihood of a wildfire occurring in a given region based on environmental data?
+* **Specific Problem:** This project refines that general problem into a specific question: can we predict the likelihood of a wildfire occurring in the western United States (California and Nevada) based on historical wildfire and weather data?
+
 ### Motivation
 Wildfires in the western United States have grown significantly in frequency and severity over the past two decades. Early identification of high-risk conditions can help emergency responders allocate resources before a fire starts rather than after. A risk model built on publicly available environmental data could support more proactive decision-making at the local and regional levels.
+
 ### Rationale
 The general problem of predicting wildfire risk is too broad to solve meaningfully without narrowing the geographic area and defining what "risk" means in measurable terms. Focusing on the western United States makes sense because that region has the most complete historical fire data and the most pressing need. Defining risk as the probability of fire occurrence in a given area based on observable conditions makes the problem concrete and solvable with available data.
+
 ### Press Release Headline and Link
 [**Seeing Wildfires Coming: Using Data to Get Ahead of the Crisis**](https://github.com/srahman05/DS-4320-Project-1/blob/eb7e659be1f3539538d978a8510499ee40b31b37/press-release.md)
 
@@ -45,8 +48,7 @@ The general problem of predicting wildfire risk is too broad to solve meaningful
 | Burn Severity | A measure of how much damage a fire caused to soil and vegetation in a given area |
 
 ### Background Summary
-This project lives at the intersection of environmental science, public policy, emergency management, and data science. Wildfires are a growing crisis in the western United States driven by climate change, drought, vegetation buildup, and
-human activity that have all made fires more frequent and more destructive over time. The consequences go well beyond the flames, as communities are displaced, air quality drops, and property is destroyed. Local governments and emergency responders face hard decisions every fire season about where to send resources, which areas need evacuation plans, and how to prepare before conditions turn dangerous. All of those decisions depend on knowing where fire risk is highest, and right now most agencies do not have reliable tools to answer that question before a fire starts. This project uses publicly available environmental data to build a predictive model of wildfire risk that is meant to support the people making those calls on the ground.
+This project lives at the intersection of environmental science, public policy, emergency management, and data science. Wildfires are a growing crisis in the western United States driven by climate change, drought, vegetation buildup, and human activity that have all made fires more frequent and more destructive over time. The consequences go well beyond the flames, as communities are displaced, air quality drops, and property is destroyed. Local governments and emergency responders face hard decisions every fire season about where to send resources, which areas need evacuation plans, and how to prepare before conditions turn dangerous. All of those decisions depend on knowing where fire risk is highest, and right now most agencies do not have reliable tools to answer that question before a fire starts. This project uses publicly available environmental data to build a predictive model of wildfire risk that is meant to support the people making those calls on the ground.
 
 ### Background Readings - [Link to Readings](https://myuva-my.sharepoint.com/:f:/g/personal/yeh5kr_virginia_edu/IgAQ1H5BqgXSQp45Rw7MxDSlAef1JKFB9re7gvb6S3XvumY?e=fGQ1x0)
 
@@ -63,8 +65,7 @@ human activity that have all made fires more frequent and more destructive over 
 ### Data Acquisition Process
 The primary dataset is the USFS Fire Occurrence Database, downloaded from the Forest Service Research Data Archive. It contains 2.1 million wildfire records spanning 1992 to 2020, with each record including the fire location, size in acres, cause classification, discovery date, and containment date. This dataset is considered the authoritative federal record of wildfire occurrences in the United States and was downloaded as a SQLite file.
 
-The secondary dataset is daily weather observations from NOAA's Global Historical Climatology Network (GHCN), accessed through NOAA's Climate Data Online portal. I selected 34 stations located primarily in California and Nevada because these
-stations had the most complete records over the 1992 to 2020 time range. Each station provides daily readings for temperature, precipitation, snowfall, and wind speed. Both datasets are publicly available at no cost and require no special access permissions. After merging, the combined dataset is stored in a MongoDB Atlas cluster in a collection called `fires` inside the `wildfires` database.
+The secondary dataset is daily weather observations from NOAA's Global Historical Climatology Network (GHCN), accessed through NOAA's Climate Data Online portal. I selected 34 stations located primarily in California and Nevada because these stations had the most complete records over the 1992 to 2020 time range. Each station provides daily readings for temperature, precipitation, snowfall, and wind speed. Both datasets are publicly available at no cost and require no special access permissions. After merging, the combined dataset is stored in a MongoDB Atlas cluster in a collection called `fires` inside the `wildfires` database.
 
 ### Code Table
 | File | Description | Link |
@@ -72,7 +73,7 @@ stations had the most complete records over the 1992 to 2020 time range. Each st
 | data-creation.ipynb | Loads the USFS SQLite file, filters to CA and NV, reads and cleans the NOAA weather CSV, computes monthly weather averages by state, merges with fire records, builds nested documents, and inserts into MongoDB | [Link](https://github.com/srahman05/DS-4320-Project-2/blob/a8bc1f89c091af3fcad723c02da517cbaf07b561/data-creation.ipynb) |
 
 ### Rationale
-The most significant judgment call in this project was how to match fire records to weather data. Each fire has a latitude and longitude, but weather stations are sparse and unevenly distributed, so matching each fire to its nearest station on the exact date would produce many missing values and introduce noise from stations that are far away. I chose to average all station readings within a state by month instead, which trades geographic precision for completeness. This means all fires in California in June 2015, for example, receive the same weather values. This is a limitation for local analysis but is reasonable for statewide or yearly trend analysis.
+The most significant judgment call in this project was how to match fire records to weather data. Each fire has a latitude and longitude, but weather stations are sparse and unevenly distributed, so matching each fire to its nearest station on the exact date would lead to many missing values. I chose to average all station readings within a state by month instead, with the trade-off of completeness over exact geographic location. This means all fires in California in June 2015, for example, receive the same weather values. This is a limitation for local analysis but is reasonable for statewide or yearly trend analysis.
 
 I also chose to filter the dataset to California and Nevada only. These two states have the most complete weather station coverage in the NOAA pull and account for a large share of western wildfires, making them a reasonable scope for this project. Expanding to other western states would require additional weather data to maintain the same match quality.
 
@@ -80,7 +81,7 @@ I also chose to filter the dataset to California and Nevada only. These two stat
 The NOAA weather stations are not evenly distributed across CA and NV. They are concentrated in certain regions, meaning the monthly averages may not accurately represent weather conditions at the actual fire location. The USFS fire database also mainly only has fires on federally managed land, so fires on private or state land may be underrepresented. Smaller fires (size class A, under 0.25 acres) are less consistently reported across agencies and years, meaning the dataset likely undercounts small fire occurrences in earlier years. Finally, cause classification depends on human judgment at the time of reporting and may be inconsistently applied. 
 
 ### Bias Mitigation
-The geographic bias in weather station coverage can be partially accounted for by including the match method field in each document, which makes it clear that weather values are state-level monthly averages rather than local measurements. Analyses that require precise weather conditions should treat these values as approximate. The underrepresentation of small fires can be mitigated by filtering analyses to fires above a certain size threshold (for example, size class C and above) where reporting is more consistent. Cause classification uncertainty can be handled by grouping causes into broader categories. 
+The geographic bias in weather station coverage can be partially accounted for by including the match method field in each document, which makes it clear that weather values are state-level monthly averages rather than local measurements. Analyses that require exact weather conditions should treat these values as approximate. The underrepresentation of small fires can be mitigated by filtering analyses to fires above a certain size threshold (for example, size class C and above) where reporting is more consistent. Cause classification uncertainty can be handled by grouping causes into broader categories. 
 
 ## Metadata
 ### Implicit Schema
