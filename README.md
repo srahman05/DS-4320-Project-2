@@ -12,7 +12,6 @@ This README contains the materials for DS 4320 Project 2.
 | NetID | yeh5kr |
 | DOI | [Link](https://doi.org/10.5281/zenodo.19645044) |
 | Press Release | [Link to Press Release](https://github.com/srahman05/DS-4320-Project-1/blob/eb7e659be1f3539538d978a8510499ee40b31b37/press-release.md) |
-| Data | [Link to Data](https://myuva-my.sharepoint.com/:f:/g/personal/yeh5kr_virginia_edu/IgAh42Bkd-YKT4hns9ODTMxhAf_ZPHtqZCuu_OTt-OEreUI?e=OqHScd) |
 | Pipeline | [Link to Pipeline Analysis](https://github.com/srahman05/DS-4320-Project-2/blob/8d0d00990ebb0c7c0d0598cddbb7143fdb7a4db4/pipeline-analysis.ipynb) |
 | License | [MIT](https://github.com/srahman05/DS-4320-Project-2/blob/4cf91ab2d6f5c60a9b8e1af2d2ecc78df10ce65b/LICENSE) |
 
