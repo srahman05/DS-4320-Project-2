@@ -1,6 +1,6 @@
 # DS 4320 Project 2: Predicting Wildfire Risk in Western United States for Crisis Prevention
 ### Executive Summary
-This repository contains the materials for DS 4320 Project 2, which focuses on predicting wildfire risk in California and Nevada using historical fire and weather data. The project uses a MongoDB Atlas database of over 272,000 wildfire records merged with daily weather observations from 34 NOAA stations spanning 1992 to 2020. A data creation pipeline processes and loads the data into a document database, and a separate analysis pipeline applies machine learning to predict the likelihood of fire occurrence based on environmental conditions. All code, metadata, documentation, and background readings are organized in this repository. 
+This repository contains the materials for DS 4320 Project 2, which focuses on predicting wildfire risk in California and Nevada using historical fire and weather data. The project uses a MongoDB Atlas database of over 272,000 wildfire records merged with daily weather observations from 34 NOAA stations spanning 1992 to 2020. A data creation pipeline processes and loads the data into a document database, and a separate analysis pipeline applies machine learning to predict the likelihood of fire occurrence based on historical wildfire and weather data. All code, metadata, documentation, and background readings are organized in this repository. 
 
 <br>
 
