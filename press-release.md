@@ -12,4 +12,4 @@ This project builds a wildfire risk prediction model trained on 272,000 fire rec
 ## Chart
 The chart below shows the average predicted probability of a large wildfire for each month of the year based on the model's output. Risk climbs steadily from spring, peaks in August, and drops off through the fall and winter. For emergency responders, this translates directly into a planning calendar. The window from June through September is when resources need to be at full readiness, and the data backs that up with three decades of fire history behind it.
 
-![chart](https://github.com/srahman05/DS-4320-Project-2/blob/a38bf8190cc34c57bb3a4b641adb28ec82332188/pipeline%20analysis/output_19_0.png)
+![chart](https://github.com/srahman05/DS-4320-Project-2/blob/6e27f45fe4293b2186e6326b229b0cbfee543865/pipeline%20analysis/output_19_0.png)
