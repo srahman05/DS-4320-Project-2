@@ -12,7 +12,7 @@ This repository contains the materials for DS 4320 Project 2, which focuses on p
 | NetID | yeh5kr |
 | DOI | [Link](https://doi.org/10.5281/zenodo.19645044) |
 | Press Release | [Link to Press Release](https://github.com/srahman05/DS-4320-Project-2/blob/21df76162a905ac9de22636d7d5f90da8b30a3a1/press-release.md) |
-| Pipeline | [Link to Pipeline Analysis](https://github.com/srahman05/DS-4320-Project-2/tree/a38bf8190cc34c57bb3a4b641adb28ec82332188/pipeline%20analysis) |
+| Pipeline | [Link to Pipeline Analysis](https://github.com/srahman05/DS-4320-Project-2/tree/e1f0d4107abc7563f664b557841063855fced4bf/pipeline%20analysis) |
 | License | [MIT](https://github.com/srahman05/DS-4320-Project-2/blob/4cf91ab2d6f5c60a9b8e1af2d2ecc78df10ce65b/LICENSE) |
 
 
